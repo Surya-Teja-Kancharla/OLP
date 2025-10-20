@@ -1,69 +1,62 @@
 import { useEffect, useState } from "react";
 import { getForumPosts, createPost, upvotePost } from "../services/forumService";
+import ForumComposer from "../components/forum/ForumComposer";
+import ForumList from "../components/forum/ForumList";
 
 export default function ForumPage() {
   const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState("");
-  const [courseId, setCourseId] = useState(1); // Default course ID for demo
+  const [courseId, setCourseId] = useState(1); // Default for demo
 
+  // Load posts from backend
   const loadPosts = async () => {
     try {
       const data = await getForumPosts(courseId);
       setPosts(data);
     } catch (err) {
-      alert("Failed to load forum posts");
+      console.error(err);
+      alert("Failed to load forum posts.");
     }
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  // Handle creating a new post
+  const handleSubmit = async (content) => {
+    if (!content.trim()) return alert("Post cannot be empty.");
     try {
-      await createPost(courseId, newPost);
-      setNewPost("");
+      await createPost(courseId, content);
       loadPosts();
     } catch (err) {
-      alert("Failed to post");
+      console.error(err);
+      alert("Failed to create post.");
     }
   };
 
+  // Handle upvoting
   const handleUpvote = async (id) => {
     try {
       await upvotePost(id);
       loadPosts();
-    } catch {
-      alert("Failed to upvote");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upvote.");
     }
   };
 
+  // Fetch posts when course changes
   useEffect(() => {
     loadPosts();
   }, [courseId]);
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Discussion Forum (Course {courseId})</h2>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold text-primary mb-4">
+        Discussion Forum (Course {courseId})
+      </h1>
 
-      <form onSubmit={handleCreate}>
-        <textarea
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          placeholder="Ask a question..."
-        />
-        <br />
-        <button type="submit">Post</button>
-      </form>
+      {/* Post creation box */}
+      <ForumComposer onSubmit={handleSubmit} />
 
-      <hr />
-      {posts.length === 0 && <p>No posts yet.</p>}
-      {posts.map((p) => (
-        <div key={p.id} style={{ borderBottom: "1px solid #ddd", margin: "10px 0" }}>
-          <p>
-            <b>{p.author}</b>: {p.content}
-          </p>
-          <p>Upvotes: {p.upvotes}</p>
-          <button onClick={() => handleUpvote(p.id)}>Upvote</button>
-        </div>
-      ))}
+      {/* List of posts */}
+      <ForumList posts={posts} onUpvote={handleUpvote} />
     </div>
   );
 }

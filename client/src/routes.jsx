@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import Dashboard from "./pages/Dashboard";
+import StudentDashboard from "./pages/StudentDashboard";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetails from "./pages/CourseDetails";
 import EnrolledCourses from "./pages/EnrolledCourses";
@@ -31,10 +31,10 @@ const AppRoutes = () => (
 
       {/* Protected Routes */}
       <Route
-        path="/dashboard"
+        path="/student"
         element={
           <PrivateRoute>
-            <Dashboard />
+            <StudentDashboard />
           </PrivateRoute>
         }
       />

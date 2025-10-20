@@ -1,57 +1,48 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(
-    () => JSON.parse(localStorage.getItem("user")) || null
-  );
-  const [token, setToken] = useState(
-    () => localStorage.getItem("token") || null
-  );
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [loading, setLoading] = useState(true);
 
+  // Load user profile if token exists
   useEffect(() => {
-    // if token exists but no user, fetch profile
-    if (token && !user) {
-      fetchProfile();
-    }
-    // eslint-disable-next-line
-  }, []);
+    const fetchProfile = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await api.get("/users/me");
+        setUser(res.data.data || res.data);
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, [token]);
 
-  const fetchProfile = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/users/me");
-      setUser(res.data.data || res.data);
-      localStorage.setItem("user", JSON.stringify(res.data.data || res.data));
-    } catch (err) {
-      console.warn("Failed to fetch profile", err?.response?.data || err);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = (userObj, jwt) => {
-    setUser(userObj);
-    setToken(jwt);
+  const login = (userData, jwt) => {
     localStorage.setItem("token", jwt);
-    localStorage.setItem("user", JSON.stringify(userObj));
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+    setToken(jwt);
   };
 
   const logout = () => {
+    localStorage.clear();
     setUser(null);
     setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, loading, login, logout, fetchProfile }}
-    >
+    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
