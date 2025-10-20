@@ -1,0 +1,135 @@
+OLP
+
+.gitignore
+.env
+README.md
+docker-compose.yml
+
+database/
+  Dockerfile
+  README.md
+  backup/
+    backup.sql
+  init/
+    create-db.sh
+  schema.sql
+  seed.sql
+
+client/
+  Dockerfile
+  README.md
+  .env
+  .gitignore
+  package.json
+  package-lock.json
+  index.html
+  postcss.config.js
+  tailwind.config.js
+  vite.config.js
+  eslint.config.js
+  public/
+    vite.svg
+  src/
+    App.jsx
+    main.jsx
+    routes.jsx
+    index.css
+    assets/
+      images/
+      logos/
+      videos/
+    components/
+      RoleRedirect.jsx
+      auth/
+        PrivateRoute.jsx
+      courses/
+        CourseCard.jsx
+      forum/
+        ForumComposer.jsx
+        ForumList.jsx
+        ForumPostCard.jsx
+      layout/
+        Footer.jsx
+        Layout.jsx
+        Navbar.jsx
+        Sidebar.jsx
+    context/
+      AuthContext.jsx
+      CourseContext.jsx
+      ForumContext.jsx
+    pages/
+      AdminDashboard.jsx
+      CourseDetails.jsx
+      CoursePlayer.jsx
+      CoursesPage.jsx
+      ForumPage.jsx
+      Home.jsx
+      InstructorDashboard.jsx
+      LoginPage.jsx
+      NotFound.jsx
+      QuizPage.jsx
+      SignupPage.jsx
+      StudentDashboard.jsx
+    services/
+      api.js
+      authService.js
+      courseService.js
+      enrollmentService.js
+      forumService.js
+      playerService.js
+      quizService.js
+      lessonCompletionService.js
+    utils/
+      formatDate.js
+      progressCalculator.js
+      roleUtils.js
+
+server/
+  Dockerfile
+  README.md
+  package.json
+  package-lock.json
+  jest.config.js
+  .env
+  .env.example
+  uploads/
+    1760932910930-513550972-DL RECORD STARTING PAGES.docx
+  src/
+    app.js
+    index.js
+    config/
+      db.js
+    controllers/
+      auth.controller.js
+      course.controller.js
+      enrollment.controller.js
+      forum.controller.js
+      quiz.controller.js
+      user.controller.js
+    middleware/
+      auth.middleware.js
+      error.middleware.js
+      rbac.middleware.js
+      upload.middleware.js
+    models/
+      Course.js
+      CourseContent.js
+      Enrollment.js
+      ForumPost.js
+      Quiz.js
+      QuizSubmission.js
+      User.js
+    routes/
+      auth.routes.js
+      course.routes.js
+      enrollment.routes.js
+      forum.routes.js
+      lesson.routes.js
+      lessonCompletion.routes.js
+      player.routes.js
+      quiz.routes.js
+      user.routes.js
+    utils/
+      jwt.helper.js
+      password.helper.js
+      response.helper.js
