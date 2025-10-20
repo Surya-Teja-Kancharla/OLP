@@ -1,83 +1,97 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getCourseById } from "../services/courseService";
-import { enrollCourse } from "../services/enrollmentService";
-import { useAuth } from "../context/AuthContext";
+import { enrollCourse, updateProgress } from "../services/enrollmentService";
+import Layout from "../components/layout/Layout";
+import api from "../services/api";
 
 export default function CourseDetails() {
   const { id } = useParams();
-  const [courseData, setCourseData] = useState(null);
+  const [course, setCourse] = useState(null);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
 
   useEffect(() => {
-    loadDetails();
-    // eslint-disable-next-line
+    const load = async () => {
+      try {
+        const res = await getCourseById(id);
+        // Expected: { course: {...}, contents: [...] } or similar
+        setCourse(res.course || res);
+        setContents(res.contents || []);
+      } catch {
+        alert("Failed to load course.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, [id]);
 
-  const loadDetails = async () => {
-    try {
-      setLoading(true);
-      const res = await getCourseById(id);
-      // our backend returned { course, contents } per controller
-      const payload = res;
-      setCourseData(payload.course || payload);
-      setContents(payload.contents || []);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load course details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleEnroll = async () => {
-    if (!user) return alert("Please login to enroll");
     try {
       await enrollCourse(Number(id));
-      alert("Enrolled successfully");
+      alert("Enrolled");
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to enroll");
+      alert("Failed to enroll");
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (!courseData) return <p>Course not found.</p>;
+  const handleMarkComplete = async (contentId) => {
+    try {
+      // Call backend to mark lesson done and get new progress
+      await api.post(`/enrollments/complete`, { course_id: id, content_id: contentId });
+      const latest = await api.get(`/enrollments/me`);
+      // (Optionally update UI; here we reload)
+      alert("Marked complete. Progress updated.");
+    } catch {
+      alert("Failed to update progress.");
+    }
+  };
+
+  if (loading) return <Layout><div className="p-6 text-gray-600">Loading...</div></Layout>;
+  if (!course) return <Layout><div className="p-6">Course not found.</div></Layout>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>{courseData.title}</h2>
-      <p>{courseData.description}</p>
-      <p>
-        Category: <b>{courseData.category}</b>
-      </p>
-      <p>Instructor: {courseData.instructor_name || courseData.instructor_id}</p>
+    <Layout>
+      <div className="max-w-6xl mx-auto p-6">
+        <h1 className="text-2xl font-bold mb-2">{course.title}</h1>
+        <p className="text-gray-600 mb-4">{course.description}</p>
 
-      <div style={{ marginTop: 12 }}>
-        <button onClick={handleEnroll}>Enroll</button>
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="lg:w-2/3 bg-white rounded-lg shadow-sm p-4">
+            <h3 className="font-semibold mb-3">Lessons</h3>
+            {contents.length === 0 && <p className="text-gray-500">No content yet.</p>}
+            <ul className="space-y-3">
+              {contents.map((c) => (
+                <li key={c.id} className="border p-3 rounded flex justify-between items-center">
+                  <div>
+                    <div className="font-medium">{c.title || c.url}</div>
+                    <div className="text-sm text-gray-500">{c.type} • {c.duration || ""}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {c.type === "video" ? (
+                      <a href={`/player?course=${id}&content=${c.id}`} className="text-primary hover:underline">Play</a>
+                    ) : (
+                      c.url && <a className="text-primary hover:underline" href={c.url} target="_blank" rel="noreferrer">Download</a>
+                    )}
+                    <button className="text-sm px-3 py-1 border rounded" onClick={() => handleMarkComplete(c.id)}>
+                      Mark complete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <aside className="lg:w-1/3 bg-white rounded-lg shadow-sm p-4">
+            <h4 className="font-semibold mb-2">Resources</h4>
+            <p className="text-sm text-gray-600 mb-3">Downloadable materials and quick stats appear here.</p>
+            <button className="w-full bg-primary text-white py-2 rounded" onClick={handleEnroll}>
+              Enroll in this course
+            </button>
+          </aside>
+        </div>
       </div>
-
-      <hr />
-
-      <h3>Lessons / Resources</h3>
-      {contents.length === 0 && <p>No content yet.</p>}
-      <ul>
-        {contents.map((c) => (
-          <li key={c.id}>
-            <div>
-              <strong>{c.title || c.url}</strong> ({c.type})
-            </div>
-            {c.url && (
-              <div>
-                <a href={c.url} target="_blank" rel="noreferrer">
-                  Open resource
-                </a>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </Layout>
   );
 }
