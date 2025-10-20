@@ -1,20 +1,14 @@
-/**
- * Authentication Routes
- * Handles signup and login requests
- */
-
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const { signup, login, logout } = require("../controllers/auth.controller");
 
-// ✅ Import controller
-const { signup, login } = require('../controllers/auth.controller');
+// Signup
+router.post("/signup", signup);
 
-// ✅ Routes
+// Login
+router.post("/login", login);
 
-// Register a new user
-router.post('/signup', signup);
-
-// Login existing user
-router.post('/login', login);
+// Logout (optional but clean)
+router.post("/logout", logout);
 
 module.exports = router;

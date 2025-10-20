@@ -43,11 +43,22 @@ async function listCourses(req, res) {
 async function getCourse(req, res) {
   try {
     const course = await Course.findById(req.params.id);
-    if (!course) return res.status(404).json({ success: false, message: 'Not found' });
+    if (!course)
+      return res.status(404).json({ success: false, message: "Course not found" });
+
     const contents = await CourseContent.listByCourse(course.id);
-    res.json({ success: true, data: { course, contents } });
+
+    // ✅ Send in the expected structure
+    res.json({
+      success: true,
+      data: {
+        course,
+        contents,
+      },
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to get course' });
+    console.error("❌ Error fetching course:", err);
+    res.status(500).json({ success: false, message: "Failed to get course" });
   }
 }
 

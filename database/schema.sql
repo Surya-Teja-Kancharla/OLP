@@ -69,3 +69,12 @@ CREATE TABLE IF NOT EXISTS forum_posts (
   upvotes INT DEFAULT 0,
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+--- lesson completion
+CREATE TABLE IF NOT EXISTS lesson_completion (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  lesson_id INT REFERENCES course_content(id) ON DELETE CASCADE,
+  completed_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (user_id, lesson_id)
+);

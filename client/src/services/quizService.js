@@ -1,6 +1,13 @@
 import api from "./api";
 
-export const submitQuiz = async (quizId, answers) => {
-  const res = await api.post("/quizzes/submit", { quiz_id: quizId, answers });
-  return res.data.data;
+// Fetch quiz for a specific course + lesson
+export const fetchQuiz = async (courseId, lessonId) => {
+  const res = await api.get(`/quizzes/${courseId}/${lessonId}`);
+  return res.data;
+};
+
+// Submit quiz answers
+export const submitQuiz = async (courseId, lessonId, answers) => {
+  const res = await api.post(`/quizzes/${courseId}/${lessonId}/submit`, { answers });
+  return res.data;
 };

@@ -1,28 +1,89 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const {
-  createCourse, listCourses, getCourse, updateCourse, deleteCourse, uploadContent
-} = require('../controllers/course.controller');
+const db = require("../config/db");
+const { authenticate } = require("../middleware/auth.middleware");
 
-const { authenticate } = require('../middleware/auth.middleware');
-const { authorizeRoles } = require('../middleware/rbac.middleware');
-const { upload } = require('../middleware/upload.middleware');
+/**
+ * ✅ Get all courses
+ */
+router.get("/", authenticate, async (req, res) => {
+  try {
+    const result = await db.query(`
+    SELECT 
+      c.id,
+      c.title,
+      c.description,
+      c.category,
+      u.name AS instructor_name
+    FROM courses c
+    LEFT JOIN users u ON c.instructor_id = u.id
+    ORDER BY c.id ASC
+  `);
 
-// public
-router.get('/', listCourses);
-router.get('/:id', getCourse);
+    res.json({
+      success: true,
+      data: result.rows || [],
+    });
+  } catch (err) {
+    console.error("❌ Error fetching all courses:", err.message);
+    res.status(500).json({ success: false, message: "Failed to load courses" });
+  }
+});
 
-// protected
-router.post('/', authenticate, authorizeRoles('instructor', 'admin'), createCourse);
-router.put('/:id', authenticate, authorizeRoles('instructor', 'admin'), updateCourse);
-router.delete('/:id', authenticate, authorizeRoles('instructor', 'admin'), deleteCourse);
+/**
+ * ✅ Get a specific course and its lessons
+ */
+router.get("/:id", authenticate, async (req, res) => {
+  const courseId = parseInt(req.params.id);
+  const userId = req.user.id;
 
-// upload content endpoint: accepts single file field 'file'
-router.post('/:courseId/content', authenticate, authorizeRoles('instructor', 'admin'),
-  upload.single('file'), (req, res) => {
-    // map courseId param into body for controller convenience
-    req.body.courseId = req.params.courseId;
-    return uploadContent(req, res);
-  });
+  try {
+    // 1️⃣ Fetch course details
+    const courseResult = await db.query(
+      `SELECT id, title, description, category, instructor_id
+       FROM courses
+       WHERE id = $1`,
+      [courseId]
+    );
+
+    if (courseResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    const course = courseResult.rows[0];
+
+    // 2️⃣ Fetch lessons from correct table name
+    const lessonsResult = await db.query(
+      `SELECT id, title, type, url
+       FROM course_content
+       WHERE course_id = $1
+       ORDER BY id ASC`,
+      [courseId]
+    );
+
+    // 3️⃣ Fetch completed lessons (correct table name)
+    const completedRes = await db.query(
+      `SELECT lesson_id FROM lesson_completion WHERE user_id = $1`,
+      [userId]
+    );
+    const completedIds = completedRes.rows.map((r) => r.lesson_id);
+
+    // 4️⃣ Attach completion flags
+    const contents = lessonsResult.rows.map((lesson) => ({
+      ...lesson,
+      completed: completedIds.includes(lesson.id),
+    }));
+
+    // 5️⃣ Send formatted response for frontend
+    res.json({
+      success: true,
+      course,
+      contents,
+    });
+  } catch (err) {
+    console.error("❌ Error fetching course details:", err.message);
+    res.status(500).json({ success: false, message: "Failed to load course data" });
+  }
+});
 
 module.exports = router;

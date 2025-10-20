@@ -1,37 +1,35 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// 🔹 Pages
+// Pages
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import StudentDashboard from "./pages/StudentDashboard";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetails from "./pages/CourseDetails";
-import CoursePlayer from "./pages/CoursePlayer";
-import EnrolledCourses from "./pages/EnrolledCourses";
 import ForumPage from "./pages/ForumPage";
 import QuizPage from "./pages/QuizPage";
 import InstructorDashboard from "./pages/InstructorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import CoursePlayer from "./pages/CoursePlayer";
 
-// 🔹 Components
+// Components
 import PrivateRoute from "./components/auth/PrivateRoute";
 import Navbar from "./components/layout/Navbar";
+import Layout from "./components/layout/Layout";
 import RoleRedirect from "./components/RoleRedirect";
 
 const AppRoutes = () => (
   <BrowserRouter>
-    {/* ✅ Single Navbar visible globally */}
     <Navbar />
-
     <Routes>
-      {/* 🌐 Public Routes */}
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
 
-      {/* 🔁 Backward-compatible alias */}
+      {/* Role Redirect */}
       <Route
         path="/dashboard"
         element={
@@ -41,57 +39,42 @@ const AppRoutes = () => (
         }
       />
 
-      {/* 🎓 Student Dashboard */}
+      {/* ✅ Authenticated Routes with Layout (Sidebar + Main) */}
       <Route
         path="/student"
         element={
           <PrivateRoute>
-            <StudentDashboard />
+            <Layout>
+              <StudentDashboard />
+            </Layout>
           </PrivateRoute>
         }
       />
 
-      {/* 👨‍🏫 Instructor Dashboard */}
-      <Route
-        path="/instructor"
-        element={
-          <PrivateRoute>
-            <InstructorDashboard />
-          </PrivateRoute>
-        }
-      />
-
-      {/* 🧑‍💼 Admin Dashboard */}
-      <Route
-        path="/admin"
-        element={
-          <PrivateRoute>
-            <AdminDashboard />
-          </PrivateRoute>
-        }
-      />
-
-      {/* 📚 Courses */}
       <Route
         path="/courses"
         element={
           <PrivateRoute>
-            <CoursesPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/courses/:id"
-        element={
-          <PrivateRoute>
-            <CourseDetails />
+            <Layout>
+              <CoursesPage />
+            </Layout>
           </PrivateRoute>
         }
       />
 
-      {/* 🎥 Course Player */}
       <Route
-        path="/player"
+        path="/courses/:id"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <CourseDetails />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/player/:courseId"
         element={
           <PrivateRoute>
             <CoursePlayer />
@@ -99,37 +82,51 @@ const AppRoutes = () => (
         }
       />
 
-      {/* 🎯 Enrollments */}
-      <Route
-        path="/enrolled"
-        element={
-          <PrivateRoute>
-            <EnrolledCourses />
-          </PrivateRoute>
-        }
-      />
-
-      {/* 💬 Forum */}
       <Route
         path="/forum"
         element={
           <PrivateRoute>
-            <ForumPage />
+            <Layout>
+              <ForumPage />
+            </Layout>
           </PrivateRoute>
         }
       />
 
-      {/* 🧠 Quizzes */}
       <Route
         path="/quiz"
         element={
           <PrivateRoute>
-            <QuizPage />
+            <Layout>
+              <QuizPage />
+            </Layout>
           </PrivateRoute>
         }
       />
 
-      {/* 🚫 Catch-all (404) */}
+      <Route
+        path="/instructor"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <InstructorDashboard />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <AdminDashboard />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      {/* 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   </BrowserRouter>

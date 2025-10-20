@@ -1,68 +1,41 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import {
-  fetchCourses,
-  createCourse,
-  getCourseById,
-  deleteCourse,
-  updateCourse,
-} from "../services/courseService";
+// context/CourseContext.js
+import { createContext, useContext, useState } from "react";
+import api from "../services/api";
 
 const CourseContext = createContext();
 
 export const CourseProvider = ({ children }) => {
   const [courses, setCourses] = useState([]);
-  const [loadingCourses, setLoadingCourses] = useState(false);
 
-  useEffect(() => {
-    loadCourses();
-  }, []);
-
+  // ✅ Fetch all courses safely
   const loadCourses = async () => {
     try {
-      setLoadingCourses(true);
-      const data = await fetchCourses();
-      setCourses(data || []);
+      const res = await api.get("/courses");
+      console.log("Courses response:", res.data);
+
+      // ✅ Normalize structure
+      let data = res.data.data || res.data;
+      if (Array.isArray(data)) {
+        setCourses(data);
+      } else if (data.courses) {
+        setCourses(data.courses);
+      } else {
+        setCourses([]);
+      }
     } catch (err) {
-      console.error("Failed loading courses", err?.response?.data || err);
-    } finally {
-      setLoadingCourses(false);
+      console.error("Failed to load courses:", err);
+      setCourses([]);
     }
   };
 
-  const addCourse = async (payload) => {
-    const newCourse = await createCourse(payload);
-    // refresh list
-    await loadCourses();
-    return newCourse;
-  };
-
+  // ✅ Delete course from backend and state
   const removeCourse = async (id) => {
-    await deleteCourse(id);
-    await loadCourses();
-  };
-
-  const editCourse = async (id, payload) => {
-    const updated = await updateCourse(id, payload);
-    await loadCourses();
-    return updated;
-  };
-
-  const getCourse = async (id) => {
-    return await getCourseById(id);
+    await api.delete(`/courses/${id}`);
+    setCourses((prev) => prev.filter((c) => c.id !== id));
   };
 
   return (
-    <CourseContext.Provider
-      value={{
-        courses,
-        loadingCourses,
-        loadCourses,
-        addCourse,
-        removeCourse,
-        editCourse,
-        getCourse,
-      }}
-    >
+    <CourseContext.Provider value={{ courses, loadCourses, removeCourse }}>
       {children}
     </CourseContext.Provider>
   );
