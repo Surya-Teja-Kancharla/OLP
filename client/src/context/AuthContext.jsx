@@ -1,14 +1,20 @@
+// client/src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || null;
+    } catch {
+      return null;
+    }
+  });
+  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
 
-  // Load user profile if token exists
   useEffect(() => {
     const fetchProfile = async () => {
       if (!token) {
@@ -16,10 +22,13 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       try {
+        // sets Authorization header in api interceptors (see api.js) OR send it directly:
+        api.defaults.headers.common.Authorization = `Bearer ${token}`;
         const res = await api.get("/users/me");
         setUser(res.data.data || res.data);
+        localStorage.setItem("user", JSON.stringify(res.data.data || res.data));
       } catch (err) {
-        console.error("Auth check failed:", err);
+        console.error("Auth fetchProfile failed", err);
         logout();
       } finally {
         setLoading(false);
@@ -28,15 +37,18 @@ export const AuthProvider = ({ children }) => {
     fetchProfile();
   }, [token]);
 
-  const login = (userData, jwt) => {
+  const login = (userObj, jwt) => {
     localStorage.setItem("token", jwt);
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userObj));
+    api.defaults.headers.common.Authorization = `Bearer ${jwt}`;
+    setUser(userObj);
     setToken(jwt);
   };
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    delete api.defaults.headers.common.Authorization;
     setUser(null);
     setToken(null);
   };
