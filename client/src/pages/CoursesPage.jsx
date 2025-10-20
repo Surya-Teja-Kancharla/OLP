@@ -11,6 +11,7 @@ export default function CoursesPage() {
   const navigate = useNavigate();
   const { token } = useAuth();
 
+  // ✅ Load courses + enrollment status
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -21,7 +22,7 @@ export default function CoursesPage() {
         setCourses(allCourses || []);
         setEnrollments(myEnrolls?.map((e) => e.course_id) || []);
       } catch (err) {
-        console.error("Failed to load courses:", err);
+        console.error("❌ Failed to load courses:", err);
       } finally {
         setLoading(false);
       }
@@ -29,21 +30,23 @@ export default function CoursesPage() {
     loadData();
   }, []);
 
+  // ✅ Enroll in a course
   const handleEnroll = async (courseId) => {
     try {
       await enrollCourse(courseId);
-      alert("Successfully enrolled!");
+      alert("✅ Successfully enrolled!");
       setEnrollments([...enrollments, courseId]);
     } catch (err) {
-      alert("Failed to enroll.");
+      alert("❌ Failed to enroll. Please try again.");
     }
   };
 
+  // ✅ Go to Course Details / Player Page
   const handleView = (courseId, isEnrolled) => {
-    // Go to course details (continue learning) page
     navigate(`/courses/${courseId}`, { state: { enrolled: isEnrolled } });
   };
 
+  // ✅ UI
   if (loading)
     return <div className="p-6 text-gray-600">Loading courses...</div>;
 
@@ -53,7 +56,7 @@ export default function CoursesPage() {
         Available Courses
       </h1>
 
-      {courses.length === 0 ? (
+      {!Array.isArray(courses) || courses.length === 0 ? (
         <p className="text-gray-600">No courses available at the moment.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

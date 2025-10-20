@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Typography + layout improvements */
+/* Global light/dark backgrounds */
 body {
-  @apply bg-gray-50 text-gray-800 antialiased font-sans;
+  @apply bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors;
 }
 
 button {
-  @apply px-4 py-2 rounded-md bg-primary text-white hover:bg-blue-700 transition;
+  @apply transition-colors;
 }
 
 input, select, textarea {

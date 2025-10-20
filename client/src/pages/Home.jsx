@@ -8,8 +8,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    // Always send user to login first (clear session if needed)
-    logout?.(); // optional — clear stale auth token if present
+    logout?.(); // Clear stale session if present
     navigate("/login");
   };
 
@@ -28,18 +27,18 @@ export default function Home() {
                 quizzes, and participate in course discussions.
               </p>
 
+              {/* ✅ Uniform Buttons */}
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => navigate("/courses")}
-                  className="bg-primary text-white px-5 py-2 rounded-md font-medium hover:bg-blue-700 transition"
+                  className="px-6 py-2.5 rounded-md font-semibold text-white bg-primary transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
                 >
                   Browse Courses
                 </button>
 
-                {/* ✅ Fixed Button Visibility & Behavior */}
                 <button
                   onClick={handleGetStarted}
-                  className="border border-primary text-primary px-5 py-2 rounded-md font-medium hover:bg-primary hover:text-white transition"
+                  className="px-6 py-2.5 rounded-md font-semibold text-white bg-primary transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
                 >
                   Get Started
                 </button>
@@ -70,7 +69,7 @@ export default function Home() {
 
             {/* Right Section */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h4 className="font-semibold mb-3">Featured course</h4>
+              <h4 className="font-semibold mb-3">Featured Course</h4>
               <p className="text-sm text-gray-600">
                 Prototypical content preview — replace with a nice hero image or carousel.
               </p>

@@ -26,24 +26,6 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Center Links */}
-        <div className="flex gap-6 mt-4 md:mt-0">
-          <a
-            href="#"
-            onClick={(e) => handleProtectedLink(e, "/courses")}
-            className="hover:text-primary text-sm transition"
-          >
-            Courses
-          </a>
-          <a
-            href="#"
-            onClick={(e) => handleProtectedLink(e, "/forum")}
-            className="hover:text-primary text-sm transition"
-          >
-            Forum
-          </a>
-        </div>
-
         {/* Social Media */}
         <div className="flex gap-4 mt-4 md:mt-0">
           <a

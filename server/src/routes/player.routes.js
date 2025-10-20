@@ -5,7 +5,7 @@ const { authenticate } = require("../middleware/auth.middleware");
 
 /**
  * ✅ POST /api/player/complete/:lessonId
- * Toggle lesson completion (mark or unmark)
+ * Marks or unmarks a lesson as completed (toggle style)
  */
 router.post("/complete/:lessonId", authenticate, async (req, res) => {
   const { lessonId } = req.params;
@@ -13,75 +13,77 @@ router.post("/complete/:lessonId", authenticate, async (req, res) => {
 
   try {
     // 1️⃣ Ensure lesson exists
-    const lessonExists = await pool.query(
-      "SELECT id FROM coursecontent WHERE id = $1",
+    const lessonCheck = await pool.query(
+      `SELECT id FROM course_content WHERE id = $1`,
       [lessonId]
     );
-    if (lessonExists.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Lesson not found",
-      });
+
+    if (lessonCheck.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Lesson not found" });
     }
 
-    // 2️⃣ Check if already completed
+    // 2️⃣ Check if this user already completed this lesson
     const existing = await pool.query(
-      "SELECT * FROM lesson_completion WHERE user_id = $1 AND lesson_id = $2",
+      `SELECT id FROM lesson_completion WHERE user_id = $1 AND lesson_id = $2`,
       [userId, lessonId]
     );
 
+    // 3️⃣ If already completed → unmark it (toggle behavior)
     if (existing.rows.length > 0) {
-      // 🔄 Unmark if already complete
       await pool.query(
-        "DELETE FROM lesson_completion WHERE user_id = $1 AND lesson_id = $2",
+        `DELETE FROM lesson_completion WHERE user_id = $1 AND lesson_id = $2`,
         [userId, lessonId]
       );
-
       return res.json({
         success: true,
-        message: "Lesson unmarked as completed",
         toggled: false,
+        message: "Lesson unmarked as completed",
       });
     }
 
-    // ✅ Otherwise, mark as completed
+    // 4️⃣ Otherwise mark as completed
     await pool.query(
-      "INSERT INTO lesson_completion (user_id, lesson_id, completed_at) VALUES ($1, $2, NOW())",
+      `INSERT INTO lesson_completion (user_id, lesson_id, completed_at)
+       VALUES ($1, $2, NOW())`,
       [userId, lessonId]
     );
 
     return res.json({
       success: true,
-      message: "Lesson marked as completed successfully",
       toggled: true,
+      message: "Lesson marked as completed successfully",
     });
   } catch (err) {
-    console.error("❌ Lesson completion error:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Failed to update completion status" });
+    console.error("❌ Error toggling lesson completion:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Database error while marking lesson complete",
+    });
   }
 });
 
 /**
- * 📥 GET /api/player/completed
- * Fetch all completed lessons for the current user
+ * ✅ GET /api/player/completed
+ * Returns all completed lesson IDs for the current user
  */
 router.get("/completed", authenticate, async (req, res) => {
   const userId = req.user.id;
+
   try {
     const result = await pool.query(
-      "SELECT lesson_id FROM lesson_completion WHERE user_id = $1",
+      `SELECT lesson_id FROM lesson_completion WHERE user_id = $1`,
       [userId]
     );
 
-    res.json({
+    return res.json({
       success: true,
       completed: result.rows.map((r) => r.lesson_id),
     });
   } catch (err) {
-    console.error("❌ Error fetching completed lessons:", err);
-    res.status(500).json({
+    console.error("❌ Error fetching completed lessons:", err.message);
+    return res.status(500).json({
       success: false,
       message: "Error fetching completed lessons",
     });
