@@ -187,7 +187,7 @@ docker compose up --build
 <p>Once ready, upload your walkthrough video (e.g., Loom, YouTube) and link it here:</p>
 
 <pre>
-📹 <a href="https://youtu.be/r51MfW6LPaM">Watch Demo Video</a>
+📹 <a href="https://youtu.be/r51MfW6LPaM">Watch Demo Video </a>
 </pre>
 
 <hr>
