@@ -10,6 +10,7 @@ const enrollmentRoutes = require("./routes/enrollment.routes");
 const quizRoutes = require("./routes/quiz.routes");
 const forumRoutes = require("./routes/forum.routes");
 const playerRoutes = require("./routes/player.routes");
+const lessonCompletionRoutes = require("./routes/lessonCompletion.routes");
 
 const errorHandler = require("./middleware/error.middleware");
 
@@ -30,6 +31,7 @@ app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/forum", forumRoutes);
 app.use("/api/player", playerRoutes);
+app.use("/api/lesson-completion", lessonCompletionRoutes);
 
 // Root test route
 app.get("/", (req, res) => res.json({ success: true, message: "OLP Backend running 🚀" }));

@@ -9,13 +9,47 @@ const ForumPost = {
     return rows[0];
   },
 
-  async listByCourse(course_id, limit = 50) {
-    const q = `SELECT p.*, u.name as author FROM forum_posts p
-               LEFT JOIN users u ON u.id = p.user_id
-               WHERE p.course_id = $1
-               ORDER BY p.created_at DESC LIMIT $2`;
+  async listByCourse(course_id, limit = 100) {
+    const q = `
+      SELECT p.*, u.name AS author
+      FROM forum_posts p
+      LEFT JOIN users u ON u.id = p.user_id
+      WHERE p.course_id = $1
+      ORDER BY p.created_at ASC
+      LIMIT $2
+    `;
     const { rows } = await pool.query(q, [course_id, limit]);
-    return rows;
+
+    // Map each post by ID
+    const map = {};
+    rows.forEach((p) => {
+      map[p.id] = { ...p, replies: [], replyCount: 0 };
+    });
+
+    const roots = [];
+
+    // Build nested structure
+    rows.forEach((p) => {
+      if (p.parent_id) {
+        const parent = map[p.parent_id];
+        if (parent) {
+          parent.replies.push(map[p.id]);
+        }
+      } else {
+        roots.push(map[p.id]);
+      }
+    });
+
+    // Compute reply counts recursively
+    const countReplies = (node) => {
+      let total = node.replies.length;
+      node.replies.forEach((r) => (total += countReplies(r)));
+      node.replyCount = total;
+      return total;
+    };
+
+    roots.forEach(countReplies);
+    return roots;
   },
 
   async upvote(post_id) {

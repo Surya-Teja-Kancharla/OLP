@@ -1,13 +1,13 @@
 import api from "./api";
 
-// Fetch quiz for a specific course + lesson
-export const fetchQuiz = async (courseId, lessonId) => {
-  const res = await api.get(`/quizzes/${courseId}/${lessonId}`);
+// Fetch quiz for a course
+export const fetchQuiz = async (courseId) => {
+  const res = await api.get(`/quizzes/${courseId}`);
   return res.data;
 };
 
 // Submit quiz answers
-export const submitQuiz = async (courseId, lessonId, answers) => {
-  const res = await api.post(`/quizzes/${courseId}/${lessonId}/submit`, { answers });
+export const submitQuiz = async (courseId, answers) => {
+  const res = await api.post(`/quizzes/${courseId}/submit`, { answers });
   return res.data;
 };

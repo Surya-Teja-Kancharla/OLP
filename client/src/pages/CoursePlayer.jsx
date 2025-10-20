@@ -57,7 +57,7 @@ export default function CoursePlayer() {
     try {
       const res = await markLessonComplete(lessonId);
       if (!res.success) throw new Error();
-
+ 
       setCompleted((prev) => [...prev, lessonId]);
       alert("Lesson marked as completed!");
 

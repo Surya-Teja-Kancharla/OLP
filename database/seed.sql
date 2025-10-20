@@ -1,7 +1,8 @@
--- Seed data for Online_Learning_Platform
--- Assumes schema.sql has already been applied.
+-- ===============================================================
+-- 🧑‍🏫 SEED DATA
+-- ===============================================================
 
--- Create users (admin, instructors, students)
+-- USERS
 INSERT INTO users (name, email, password_hash, role)
 VALUES
 ('Surya Teja', 'surya@gmail.com', crypt('admin123', gen_salt('bf')), 'admin'),
@@ -11,7 +12,7 @@ VALUES
 ('Priya Prakash', 'priya@gmail.com', crypt('student123', gen_salt('bf')), 'student'),
 ('Varun Kumar', 'varun@gmail.com', crypt('student123', gen_salt('bf')), 'student');
 
--- Courses: 3 by Rajesh (user id 2), 3 by Geeta (user id 3)
+-- COURSES
 INSERT INTO courses (title, description, category, instructor_id)
 VALUES
 ('Full Stack Web Development', 'Learn complete web development from frontend to backend.', 'Web Development', 2),
@@ -21,68 +22,72 @@ VALUES
 ('Machine Learning Basics', 'Supervised and unsupervised learning fundamentals.', 'Artificial Intelligence', 3),
 ('Cloud Computing Fundamentals', 'Introduction to cloud concepts and providers.', 'Cloud Computing', 3);
 
--- Course content: each course => 4 items (2 videos, 2 pdfs)
+-- ===============================================================
+-- COURSE CONTENT (4 items per course: 2 videos, 2 PDFs)
+-- ===============================================================
 
 -- Course 1: Full Stack Web Development
-INSERT INTO coursecontent (course_id, type, url, duration)
+INSERT INTO course_content (course_id, type, url, duration, title)
 VALUES
-(1, 'video', 'https://www.youtube.com/watch?v=nu_pCVPKzTk', '00:18:00'),
-(1, 'video', 'https://www.youtube.com/watch?v=Ke90Tje7VS0', '00:20:00'),
-(1, 'pdf', 'https://example.com/resources/html_css_basics.pdf', NULL),
-(1, 'pdf', 'https://example.com/resources/react_notes.pdf', NULL);
+(1, 'video', 'https://www.youtube.com/watch?v=nu_pCVPKzTk', '00:18:00', 'HTML & CSS Basics'),
+(1, 'video', 'https://www.youtube.com/watch?v=Ke90Tje7VS0', '00:20:00', 'Intro to React'),
+(1, 'pdf', 'https://example.com/resources/html_css_basics.pdf', NULL, 'HTML/CSS Reference'),
+(1, 'pdf', 'https://example.com/resources/react_notes.pdf', NULL, 'React Notes');
 
 -- Course 2: Database Management Systems
-INSERT INTO coursecontent (course_id, type, url, duration)
+INSERT INTO course_content (course_id, type, url, duration, title)
 VALUES
-(2, 'video', 'https://www.youtube.com/watch?v=HXV3zeQKqGY', '00:25:00'),
-(2, 'video', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', '00:22:00'),
-(2, 'pdf', 'https://example.com/resources/sql_basics.pdf', NULL),
-(2, 'pdf', 'https://example.com/resources/db_design_tutorial.pdf', NULL);
+(2, 'video', 'https://www.youtube.com/watch?v=HXV3zeQKqGY', '00:25:00', 'SQL Tutorial'),
+(2, 'video', 'https://www.youtube.com/watch?v=9Pzj7Aj25lw', '00:22:00', 'ER Diagrams'),
+(2, 'pdf', 'https://example.com/resources/sql_basics.pdf', NULL, 'SQL Basics'),
+(2, 'pdf', 'https://example.com/resources/db_design_tutorial.pdf', NULL, 'Database Design');
 
 -- Course 3: Operating Systems Concepts
-INSERT INTO coursecontent (course_id, type, url, duration)
+INSERT INTO course_content (course_id, type, url, duration, title)
 VALUES
-(3, 'video', 'https://www.youtube.com/watch?v=vBURTt97EkA', '00:28:00'),
-(3, 'video', 'https://www.youtube.com/watch?v=26QPDBe-NB8', '00:24:00'),
-(3, 'pdf', 'https://example.com/resources/os_fundamentals.pdf', NULL),
-(3, 'pdf', 'https://example.com/resources/os_scheduling.pdf', NULL);
+(3, 'video', 'https://www.youtube.com/watch?v=vBURTt97EkA', '00:28:00', 'Intro to OS'),
+(3, 'video', 'https://www.youtube.com/watch?v=26QPDBe-NB8', '00:24:00', 'Process Management'),
+(3, 'pdf', 'https://example.com/resources/os_fundamentals.pdf', NULL, 'OS Fundamentals'),
+(3, 'pdf', 'https://example.com/resources/os_scheduling.pdf', NULL, 'Scheduling Algorithms');
 
 -- Course 4: Data Science with Python
-INSERT INTO coursecontent (course_id, type, url, duration)
+INSERT INTO course_content (course_id, type, url, duration, title)
 VALUES
-(4, 'video', 'https://www.youtube.com/watch?v=ua-CiDNNj30', '00:30:00'),
-(4, 'video', 'https://www.youtube.com/watch?v=r-uOLxNrNk8', '00:27:00'),
-(4, 'pdf', 'https://example.com/resources/data_science_intro.pdf', NULL),
-(4, 'pdf', 'https://example.com/resources/pandas_tutorial.pdf', NULL);
+(4, 'video', 'https://www.youtube.com/watch?v=ua-CiDNNj30', '00:30:00', 'Data Science Intro'),
+(4, 'video', 'https://www.youtube.com/watch?v=r-uOLxNrNk8', '00:27:00', 'Pandas Tutorial'),
+(4, 'pdf', 'https://example.com/resources/data_science_intro.pdf', NULL, 'Data Science Overview'),
+(4, 'pdf', 'https://example.com/resources/pandas_tutorial.pdf', NULL, 'Pandas Notes');
 
 -- Course 5: Machine Learning Basics
-INSERT INTO coursecontent (course_id, type, url, duration)
+INSERT INTO course_content (course_id, type, url, duration, title)
 VALUES
-(5, 'video', 'https://www.youtube.com/watch?v=Gv9_4yMHFhI', '00:32:00'),
-(5, 'video', 'https://www.youtube.com/watch?v=i_LwzRVP7bg', '00:29:00'),
-(5, 'pdf', 'https://example.com/resources/ml_overview.pdf', NULL),
-(5, 'pdf', 'https://example.com/resources/supervised_learning_notes.pdf', NULL);
+(5, 'video', 'https://www.youtube.com/watch?v=Gv9_4yMHFhI', '00:32:00', 'Intro to ML'),
+(5, 'video', 'https://www.youtube.com/watch?v=i_LwzRVP7bg', '00:29:00', 'Supervised Learning'),
+(5, 'pdf', 'https://example.com/resources/ml_overview.pdf', NULL, 'ML Overview'),
+(5, 'pdf', 'https://example.com/resources/supervised_learning_notes.pdf', NULL, 'Supervised Learning Notes');
 
 -- Course 6: Cloud Computing Fundamentals
-INSERT INTO coursecontent (course_id, type, url, duration)
+INSERT INTO course_content (course_id, type, url, duration, title)
 VALUES
-(6, 'video', 'https://www.youtube.com/watch?v=2LaAJq1lB1Q', '00:30:00'),
-(6, 'video', 'https://www.youtube.com/watch?v=2LaAJq1lB1Q', '00:31:00'),
-(6, 'pdf', 'https://example.com/resources/cloud_intro.pdf', NULL),
-(6, 'pdf', 'https://example.com/resources/aws_azure_basics.pdf', NULL);
+(6, 'video', 'https://www.youtube.com/watch?v=2LaAJq1lB1Q', '00:30:00', 'Cloud Intro'),
+(6, 'video', 'https://www.youtube.com/watch?v=2LaAJq1lB1Q', '00:31:00', 'AWS Fundamentals'),
+(6, 'pdf', 'https://example.com/resources/cloud_intro.pdf', NULL, 'Cloud Basics'),
+(6, 'pdf', 'https://example.com/resources/aws_azure_basics.pdf', NULL, 'AWS & Azure Overview');
 
--- Enrollments: 3 enrollments per student (total 9)
--- Aditya (user id 4): courses 1,4,5
-INSERT INTO enrollments (course_id, user_id, progress) VALUES (1,4,60.0),(4,4,40.0),(5,4,30.0);
+-- ===============================================================
+-- ENROLLMENTS
+-- ===============================================================
+INSERT INTO enrollments (course_id, user_id, progress)
+VALUES
+(1,4,60),(4,4,40),(5,4,30),  -- Aditya
+(2,5,20),(3,5,50),(6,5,10),  -- Priya
+(1,6,70),(5,6,45),(6,6,25);  -- Varun
 
--- Priya (user id 5): courses 2,3,6
-INSERT INTO enrollments (course_id, user_id, progress) VALUES (2,5,20.0),(3,5,50.0),(6,5,10.0);
-
--- Varun (user id 6): courses 1,5,6
-INSERT INTO enrollments (course_id, user_id, progress) VALUES (1,6,70.0),(5,6,45.0),(6,6,25.0);
-
--- Quizzes: one per course with JSON questions
-INSERT INTO quizzes (course_id, questions, passing_score) VALUES
+-- ===============================================================
+-- QUIZZES
+-- ===============================================================
+INSERT INTO quizzes (course_id, questions, passing_score)
+VALUES
 (1, '[
   {"question":"What does CSS stand for?","options":["Cascading Style Sheets","Colorful Style System","Creative Style Syntax"],"answer":"Cascading Style Sheets"},
   {"question":"Which tag defines a hyperlink?","options":["<link>","<a>","<href>"],"answer":"<a>"}
@@ -113,16 +118,31 @@ INSERT INTO quizzes (course_id, questions, passing_score) VALUES
   {"question":"Which company provides AWS?","options":["Microsoft","Amazon","Google"],"answer":"Amazon"}
 ]', 50);
 
--- Quiz submissions: a few example attempts
-INSERT INTO quizsubmissions (quiz_id, user_id, score, attempts) VALUES
+-- ===============================================================
+-- QUIZ SUBMISSIONS
+-- ===============================================================
+INSERT INTO quiz_submissions (quiz_id, user_id, score, attempts)
+VALUES
 (1,4,80,1),(2,5,60,1),(3,5,75,1),
 (4,4,65,1),(5,6,70,1),(6,6,55,1);
 
--- Forum posts (sample)
-INSERT INTO forumposts (course_id, user_id, content, upvotes) VALUES
+-- ===============================================================
+-- FORUM POSTS
+-- ===============================================================
+INSERT INTO forum_posts (course_id, user_id, content, upvotes)
+VALUES
 (1,4,'Can someone explain how APIs integrate in full stack apps?',5),
 (2,5,'What is the difference between primary key and unique key?',3),
 (3,5,'How does CPU scheduling affect OS performance?',2),
 (4,4,'Any dataset recommendations for practice?',4),
 (5,6,'What is the difference between KNN and K-Means?',3),
 (6,6,'How to get started with AWS free tier?',2);
+
+-- ===============================================================
+-- ✅ VALIDATION QUERIES
+-- ===============================================================
+SELECT COUNT(*) AS user_count FROM users;
+SELECT COUNT(*) AS course_count FROM courses;
+SELECT COUNT(*) AS lesson_count FROM course_content;
+SELECT COUNT(*) AS forum_count FROM forum_posts;
+SELECT COUNT(*) AS quiz_count FROM quizzes;

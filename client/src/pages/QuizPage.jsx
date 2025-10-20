@@ -6,7 +6,6 @@ export default function QuizPage() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const courseId = params.get("course");
-  const lessonId = params.get("lesson");
 
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -16,7 +15,7 @@ export default function QuizPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await fetchQuiz(courseId, lessonId);
+        const data = await fetchQuiz(courseId);
         setQuiz(data.quiz);
       } catch (err) {
         console.error(err);
@@ -26,28 +25,25 @@ export default function QuizPage() {
       }
     };
     load();
-  }, [courseId, lessonId]);
+  }, [courseId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await submitQuiz(courseId, lessonId, quiz.questions.map((_, i) => answers[i] || ""));
+      const res = await submitQuiz(courseId, quiz.questions.map((_, i) => answers[i] || ""));
       setResult(res);
     } catch (err) {
       alert(err.response?.data?.message || "Failed to submit quiz");
     }
   };
 
-  if (loading)
-    return <div className="flex justify-center items-center h-screen text-gray-600">Loading quiz…</div>;
-
-  if (!quiz)
-    return <div className="text-center text-gray-600 mt-10">Quiz not found.</div>;
+  if (loading) return <div className="flex justify-center items-center h-screen text-gray-600">Loading quiz…</div>;
+  if (!quiz) return <div className="text-center text-gray-600 mt-10">Quiz not found.</div>;
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">
       <h1 className="text-2xl font-bold text-primary mb-4">
-        Lesson Quiz – {quiz.title || `Lesson ${lessonId}`}
+        Course Quiz – {quiz.title || `Course ${courseId}`}
       </h1>
 
       {result ? (
@@ -55,11 +51,7 @@ export default function QuizPage() {
           <p className="text-lg font-semibold">
             Score: <span className="text-primary">{result.score}%</span>
           </p>
-          <p
-            className={`text-lg font-bold ${
-              result.passed ? "text-green-600" : "text-red-600"
-            }`}
-          >
+          <p className={`text-lg font-bold ${result.passed ? "text-green-600" : "text-red-600"}`}>
             {result.passed ? "✅ Passed" : "❌ Failed"}
           </p>
           <p className="text-sm text-gray-600">

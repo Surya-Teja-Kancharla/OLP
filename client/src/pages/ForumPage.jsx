@@ -5,9 +5,8 @@ import ForumList from "../components/forum/ForumList";
 
 export default function ForumPage() {
   const [posts, setPosts] = useState([]);
-  const [courseId, setCourseId] = useState(1); // Default for demo
+  const [courseId, setCourseId] = useState(1); // Example
 
-  // Load posts from backend
   const loadPosts = async () => {
     try {
       const data = await getForumPosts(courseId);
@@ -18,30 +17,21 @@ export default function ForumPage() {
     }
   };
 
-  // Handle creating a new post
   const handleSubmit = async (content) => {
-    if (!content.trim()) return alert("Post cannot be empty.");
-    try {
-      await createPost(courseId, content);
-      loadPosts();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create post.");
-    }
+    await createPost(courseId, content);
+    loadPosts();
   };
 
-  // Handle upvoting
+  const handleReply = async (parentId, content) => {
+    await createPost(courseId, content, parentId);
+    loadPosts();
+  };
+
   const handleUpvote = async (id) => {
-    try {
-      await upvotePost(id);
-      loadPosts();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to upvote.");
-    }
+    await upvotePost(id);
+    loadPosts();
   };
 
-  // Fetch posts when course changes
   useEffect(() => {
     loadPosts();
   }, [courseId]);
@@ -52,11 +42,13 @@ export default function ForumPage() {
         Discussion Forum (Course {courseId})
       </h1>
 
-      {/* Post creation box */}
       <ForumComposer onSubmit={handleSubmit} />
 
-      {/* List of posts */}
-      <ForumList posts={posts} onUpvote={handleUpvote} />
+      <ForumList
+        posts={posts}
+        onUpvote={handleUpvote}
+        onReply={handleReply}
+      />
     </div>
   );
 }

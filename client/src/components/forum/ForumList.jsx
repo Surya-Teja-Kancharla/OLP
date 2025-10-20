@@ -1,6 +1,6 @@
 import ForumPostCard from "./ForumPostCard";
 
-export default function ForumList({ posts, onUpvote }) {
+export default function ForumList({ posts, onUpvote, onReply }) {
   if (!posts || posts.length === 0) {
     return (
       <div className="text-center text-gray-500 py-8">
@@ -12,7 +12,12 @@ export default function ForumList({ posts, onUpvote }) {
   return (
     <div>
       {posts.map((post) => (
-        <ForumPostCard key={post.id} post={post} onUpvote={onUpvote} />
+        <ForumPostCard
+          key={post.id}
+          post={post}
+          onUpvote={onUpvote}
+          onReply={onReply}
+        />
       ))}
     </div>
   );

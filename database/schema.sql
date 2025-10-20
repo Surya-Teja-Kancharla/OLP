@@ -1,4 +1,13 @@
--- users
+-- ===============================================================
+-- 🌐 Online Learning Platform Database Schema (Clean Version)
+-- ===============================================================
+
+-- Enable pgcrypto for password hashing
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- ===============================================================
+-- USERS
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
@@ -8,7 +17,9 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- courses
+-- ===============================================================
+-- COURSES
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS courses (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
@@ -18,7 +29,9 @@ CREATE TABLE IF NOT EXISTS courses (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- course content
+-- ===============================================================
+-- COURSE CONTENT
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS course_content (
   id SERIAL PRIMARY KEY,
   course_id INT REFERENCES courses(id) ON DELETE CASCADE,
@@ -29,7 +42,9 @@ CREATE TABLE IF NOT EXISTS course_content (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- enrollments
+-- ===============================================================
+-- ENROLLMENTS
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS enrollments (
   id SERIAL PRIMARY KEY,
   course_id INT REFERENCES courses(id) ON DELETE CASCADE,
@@ -39,7 +54,9 @@ CREATE TABLE IF NOT EXISTS enrollments (
   UNIQUE (course_id, user_id)
 );
 
--- quizzes
+-- ===============================================================
+-- QUIZZES
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS quizzes (
   id SERIAL PRIMARY KEY,
   course_id INT REFERENCES courses(id) ON DELETE CASCADE,
@@ -48,7 +65,9 @@ CREATE TABLE IF NOT EXISTS quizzes (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- quiz_submissions
+-- ===============================================================
+-- QUIZ SUBMISSIONS
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS quiz_submissions (
   id SERIAL PRIMARY KEY,
   quiz_id INT REFERENCES quizzes(id) ON DELETE CASCADE,
@@ -59,18 +78,22 @@ CREATE TABLE IF NOT EXISTS quiz_submissions (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- forum_posts
+-- ===============================================================
+-- FORUM POSTS
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS forum_posts (
   id SERIAL PRIMARY KEY,
   course_id INT REFERENCES courses(id) ON DELETE CASCADE,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
-  parent_id INT DEFAULT NULL,
+  parent_id INT REFERENCES forum_posts(id) ON DELETE CASCADE,
   content TEXT,
   upvotes INT DEFAULT 0,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
---- lesson completion
+-- ===============================================================
+-- LESSON COMPLETION
+-- ===============================================================
 CREATE TABLE IF NOT EXISTS lesson_completion (
   id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
