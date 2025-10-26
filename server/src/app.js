@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+require("dotenv").config();
 
 // Import routes
 const authRoutes = require("./routes/auth.routes");
@@ -17,11 +18,18 @@ const errorHandler = require("./middleware/error.middleware");
 
 const app = express();
 
-app.use(cors());
+// ✅ CORS Configuration
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+    credentials: true, // ✅ allows cookies and JWTs to be sent securely
+  })
+);
+
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Static uploads folder
+// ✅ Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 
 // ✅ Register all routes
@@ -35,10 +43,12 @@ app.use("/api/player", playerRoutes);
 app.use("/api/lesson-completion", lessonCompletionRoutes);
 app.use("/api/course-content", courseContentRoutes);
 
-// Root test route
-app.get("/", (req, res) => res.json({ success: true, message: "OLP Backend running 🚀" }));
+// ✅ Health Check Endpoint (useful for Render)
+app.get("/", (req, res) => {
+  res.json({ success: true, message: "OLP Backend running 🚀", env: process.env.NODE_ENV });
+});
 
-// Error handling middleware
+// ✅ Error Handler
 app.use(errorHandler);
 
 module.exports = app;
