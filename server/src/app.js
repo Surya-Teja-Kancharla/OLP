@@ -3,7 +3,6 @@ const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
 
-// Import routes
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const courseRoutes = require("./routes/course.routes");
@@ -13,26 +12,30 @@ const forumRoutes = require("./routes/forum.routes");
 const playerRoutes = require("./routes/player.routes");
 const lessonCompletionRoutes = require("./routes/lessonCompletion.routes");
 const courseContentRoutes = require("./routes/courseContent.routes");
-
 const errorHandler = require("./middleware/error.middleware");
 
 const app = express();
 
-// ✅ CORS Configuration
+// ✅ CORS Configuration for Render
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
-    credentials: true, // ✅ allows cookies and JWTs to be sent securely
+    origin: [
+      "https://olp-frontend.onrender.com", // your deployed frontend
+      "http://localhost:5173",             // local dev
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Serve uploaded files
+// ✅ Serve uploaded files if any
 app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 
-// ✅ Register all routes
+// ✅ Register routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
@@ -43,9 +46,9 @@ app.use("/api/player", playerRoutes);
 app.use("/api/lesson-completion", lessonCompletionRoutes);
 app.use("/api/course-content", courseContentRoutes);
 
-// ✅ Health Check Endpoint (useful for Render)
+// ✅ Health check route
 app.get("/", (req, res) => {
-  res.json({ success: true, message: "OLP Backend running 🚀", env: process.env.NODE_ENV });
+  res.json({ success: true, message: "OLP Backend running 🚀" });
 });
 
 // ✅ Error Handler
