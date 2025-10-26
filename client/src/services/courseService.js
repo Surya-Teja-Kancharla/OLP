@@ -28,7 +28,7 @@ export const getCourseById = async (id) => {
  */
 export const createCourse = async (data) => {
   const res = await api.post("/courses", data);
-  return res.data;
+  return res.data.courses;
 };
 
 /**

@@ -10,6 +10,8 @@ import CourseDetails from "./pages/CourseDetails";
 import ForumPage from "./pages/ForumPage";
 import QuizPage from "./pages/QuizPage";
 import InstructorDashboard from "./pages/InstructorDashboard";
+import InstructorCourses from "./pages/InstructorCourses";
+import InstructorCourseEdit from "./pages/InstructorCourseEdit";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import CoursePlayer from "./pages/CoursePlayer";
@@ -76,9 +78,9 @@ const AppRoutes = () => (
       <Route
         path="/player/:courseId"
         element={
-          <PrivateRoute>
+          <Layout>
             <CoursePlayer />
-          </PrivateRoute>
+          </Layout>
         }
       />
 
@@ -114,6 +116,29 @@ const AppRoutes = () => (
           </PrivateRoute>
         }
       />
+
+      <Route
+        path="/instructor/courses"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <InstructorCourses />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/instructor/courses/:id/edit"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <InstructorCourseEdit />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
 
       <Route
         path="/admin"

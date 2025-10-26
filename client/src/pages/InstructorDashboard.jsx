@@ -1,100 +1,113 @@
-import React, { useState } from "react";
-import { useCourses } from "../context/CourseContext";
+import React, { useEffect, useState } from "react";
+import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { PlusCircle, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // ✅ Import Toastify
 
 export default function InstructorDashboard() {
-  const { addCourse, courses, loadCourses } = useCourses();
   const { user } = useAuth();
-  const [form, setForm] = useState({ title: "", description: "", category: "" });
+  const navigate = useNavigate();
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  const [courses, setCourses] = useState([]);
+  const [form, setForm] = useState({ title: "", description: "", category: "" });
+  const [loading, setLoading] = useState(false);
+  const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    loadCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  async function loadCourses() {
     try {
-      await addCourse(form);
-      alert("Course created successfully!");
+      const res = await api.get("/courses");
+      setCourses(res.data.data || []);
+    } catch (err) {
+      console.error("loadCourses error:", err?.response?.data || err.message || err);
+      setCourses([]);
+    }
+  }
+
+  async function handleCreate(e) {
+    e.preventDefault();
+    if (!form.title) return toast.error("Title is required");
+    setCreating(true);
+
+    try {
+      const res = await api.post("/courses", form);
       setForm({ title: "", description: "", category: "" });
       await loadCourses();
+      toast.success(`🎉 Course "${res.data.data.title}" created successfully!`);
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to create course");
+      console.error("Create course failed:", err?.response?.data || err.message);
+      toast.error(err?.response?.data?.message || "Failed to create course");
+    } finally {
+      setCreating(false);
     }
-  };
+  }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-primary mb-4">
-        Instructor Dashboard
-      </h1>
-      <p className="text-gray-600 mb-6">
-        Welcome, {user?.name}! Create and manage your courses.
-      </p>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Instructor Dashboard</h1>
 
-      {/* Create course form */}
-      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
-          <PlusCircle className="text-primary w-5 h-5" /> Create a New Course
-        </h2>
-        <form onSubmit={handleCreate} className="space-y-4 max-w-lg">
-          <input
-            className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-primary"
-            placeholder="Course title"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            required
-          />
-          <textarea
-            className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-primary"
-            placeholder="Short description"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            rows="3"
-          />
-          <input
-            className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-primary"
-            placeholder="Category"
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-          />
-          <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-700">
-            Create Course
-          </button>
-        </form>
+      {/* Centered Create Course Form */}
+      <div className="flex justify-center mb-8">
+        <div className="w-full lg:w-2/3">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">Create New Course</h2>
+            <form onSubmit={handleCreate} className="space-y-3">
+              <input
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder="Course title"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+              <input
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                placeholder="Category (optional)"
+                className="w-full border px-3 py-2 rounded"
+              />
+              <textarea
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="Short description (optional)"
+                className="w-full border px-3 py-2 rounded"
+              />
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="bg-primary text-white px-4 py-2 rounded"
+                >
+                  {creating ? "Creating..." : "Create Course"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ title: "", description: "", category: "" })}
+                  className="px-4 py-2 border rounded"
+                >
+                  Reset
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
 
-      {/* Instructor’s course list */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Your Courses</h2>
-        {courses.length === 0 ? (
-          <p className="text-gray-500">No courses created yet.</p>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {courses
-              .filter(
-                (c) =>
-                  c.instructor_name === user?.name ||
-                  c.instructor_id === user?.id
-              )
-              .map((c) => (
-                <div
-                  key={c.id}
-                  className="bg-white shadow-sm hover:shadow-md rounded-lg p-4 flex flex-col justify-between transition"
-                >
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                      <BookOpen className="text-primary w-5 h-5" />
-                      {c.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {c.category || "Uncategorized"}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-2 line-clamp-2">
-                      {c.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-          </div>
-        )}
+      {/* Hint to go to Courses page */}
+      <div className="mt-8 text-gray-600 text-center">
+        <p>
+          To view or manage your courses, go to{" "}
+          <a
+            href="/instructor/courses"
+            className="text-primary font-medium hover:underline"
+          >
+            Courses
+          </a>{" "}
+          page.
+        </p>
       </div>
     </div>
   );

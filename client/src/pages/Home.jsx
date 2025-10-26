@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import { useAuth } from "../context/AuthContext";
 
@@ -14,66 +14,34 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-8 py-8 mt-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            {/* Left Section */}
-            <div>
-              <h1 className="text-4xl font-bold mb-4 text-primary">
-                Learn. Build. Grow.
-              </h1>
-              <p className="text-gray-700 mb-6">
-                A modern Online Learning Platform — browse courses, enroll, take
-                quizzes, and participate in course discussions.
-              </p>
+      <main className="flex-1 flex flex-col justify-center items-center text-center px-6 py-12">
+        <div className="max-w-2xl">
+          {/* Heading */}
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-primary">
+            Learn. Build. Grow.
+          </h1>
 
-              {/* ✅ Uniform Buttons */}
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => navigate("/courses")}
-                  className="px-6 py-2.5 rounded-md font-semibold text-white bg-primary transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
-                >
-                  Browse Courses
-                </button>
+          {/* Subtext */}
+          <p className="text-gray-700 text-lg mb-8 leading-relaxed">
+            A modern Online Learning Platform: browse courses, enroll, take
+            quizzes, and participate in course discussions.
+          </p>
 
-                <button
-                  onClick={handleGetStarted}
-                  className="px-6 py-2.5 rounded-md font-semibold text-white bg-primary transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
-                >
-                  Get Started
-                </button>
-              </div>
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <button
+              onClick={() => navigate("/courses")}
+              className="px-6 py-2.5 rounded-md font-semibold text-white bg-primary transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
+            >
+              Browse Courses
+            </button>
 
-              {/* Quick Links */}
-              <div className="mt-8">
-                <h3 className="font-semibold mb-2">Quick Links</h3>
-                <ul className="text-gray-600 space-y-1">
-                  <li>
-                    <Link to="/courses" className="hover:underline">
-                      All Courses
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/forum" className="hover:underline">
-                      Discussion Forum
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/quiz" className="hover:underline">
-                      Submit Quiz
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Right Section */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h4 className="font-semibold mb-3">Featured Course</h4>
-              <p className="text-sm text-gray-600">
-                Prototypical content preview — replace with a nice hero image or carousel.
-              </p>
-            </div>
+            <button
+              onClick={handleGetStarted}
+              className="px-6 py-2.5 rounded-md font-semibold text-white bg-primary transition-all duration-200 shadow-md hover:shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
+            >
+              Get Started
+            </button>
           </div>
         </div>
       </main>

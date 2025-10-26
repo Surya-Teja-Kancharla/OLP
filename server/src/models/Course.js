@@ -1,40 +1,56 @@
-const pool = require('../config/db');
+const pool = require("../config/db");
 
 const Course = {
   async create({ title, description, category, instructor_id }) {
-    const q = `INSERT INTO courses (title, description, category, instructor_id)
-               VALUES ($1,$2,$3,$4) RETURNING *`;
-    const vals = [title, description, category, instructor_id];
-    const { rows } = await pool.query(q, vals);
+    const query = `
+      INSERT INTO courses (title, description, category, instructor_id)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+    `;
+    const values = [title, description, category, instructor_id];
+    const { rows } = await pool.query(query, values);
     return rows[0];
   },
 
-  async update(id, data) {
-    const q = `UPDATE courses SET title=$1, description=$2, category=$3 WHERE id=$4 RETURNING *`;
-    const vals = [data.title, data.description, data.category, id];
-    const { rows } = await pool.query(q, vals);
+  async list({ limit = 20, offset = 0 }) {
+    const query = `
+      SELECT 
+        c.id,
+        c.title,
+        c.description,
+        c.category,
+        c.instructor_id,
+        u.name AS instructor_name,
+        c.created_at
+      FROM courses c
+      LEFT JOIN users u ON c.instructor_id = u.id
+      ORDER BY c.created_at DESC
+      LIMIT $1 OFFSET $2;
+    `;
+    const { rows } = await pool.query(query, [limit, offset]);
+    return rows;
+  },
+
+  async findById(id) {
+    const { rows } = await pool.query(`SELECT * FROM courses WHERE id = $1`, [id]);
+    return rows[0];
+  },
+
+  async update(id, { title, description, category }) {
+    const query = `
+      UPDATE courses
+      SET title=$1, description=$2, category=$3, updated_at=NOW()
+      WHERE id=$4
+      RETURNING *;
+    `;
+    const values = [title, description, category, id];
+    const { rows } = await pool.query(query, values);
     return rows[0];
   },
 
   async delete(id) {
-    await pool.query(`DELETE FROM course_content WHERE course_id = $1`, [id]);
-    const { rows } = await pool.query(`DELETE FROM courses WHERE id = $1 RETURNING *`, [id]);
-    return rows[0];
+    await pool.query(`DELETE FROM courses WHERE id = $1`, [id]);
   },
-
-  async findById(id) {
-    const q = `SELECT * FROM courses WHERE id = $1`;
-    const { rows } = await pool.query(q, [id]);
-    return rows[0];
-  },
-
-  async list({ limit = 20, offset = 0 } = {}) {
-    const q = `SELECT c.*, u.name as instructor_name FROM courses c
-               LEFT JOIN users u ON u.id = c.instructor_id
-               ORDER BY c.id DESC LIMIT $1 OFFSET $2`;
-    const { rows } = await pool.query(q, [limit, offset]);
-    return rows;
-  }
 };
 
 module.exports = Course;

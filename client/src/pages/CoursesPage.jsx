@@ -3,6 +3,7 @@ import { fetchCourses } from "../services/courseService";
 import { getMyEnrollments, enrollCourse } from "../services/enrollmentService";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -11,7 +12,7 @@ export default function CoursesPage() {
   const navigate = useNavigate();
   const { token } = useAuth();
 
-  // ✅ Load courses + enrollment status
+  // ✅ Load all courses + enrollment status
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -23,6 +24,7 @@ export default function CoursesPage() {
         setEnrollments(myEnrolls?.map((e) => e.course_id) || []);
       } catch (err) {
         console.error("❌ Failed to load courses:", err);
+        toast.error("Failed to load courses. Try again.");
       } finally {
         setLoading(false);
       }
@@ -30,38 +32,50 @@ export default function CoursesPage() {
     loadData();
   }, []);
 
-  // ✅ Enroll in a course
-  const handleEnroll = async (courseId) => {
+  // ✅ Enroll in a course (with toasts)
+  const handleEnroll = async (courseId, title) => {
+    if (enrollments.includes(courseId)) {
+      toast.info(`ℹ️ You’re already enrolled in "${title}"!`);
+      return;
+    }
+
     try {
-      await enrollCourse(courseId);
-      alert("✅ Successfully enrolled!");
-      setEnrollments([...enrollments, courseId]);
+      const res = await enrollCourse(courseId);
+      if (res?.success) {
+        toast.success(`🎉 Successfully enrolled in "${title}"!`);
+        setEnrollments((prev) => [...prev, courseId]);
+      } else {
+        toast.error(res?.message || "Failed to enroll. Please try again.");
+      }
     } catch (err) {
-      alert("❌ Failed to enroll. Please try again.");
+      console.error("Enrollment error:", err);
+      toast.error("❌ Enrollment failed. Try again later.");
     }
   };
 
-  // ✅ Go to Course Details / Player Page
+  // ✅ View or Continue course
   const handleView = (courseId, isEnrolled) => {
     navigate(`/courses/${courseId}`, { state: { enrolled: isEnrolled } });
   };
 
-  // ✅ UI
+  // ✅ Loading state
   if (loading)
     return <div className="p-6 text-gray-600">Loading courses...</div>;
 
+  // ✅ Page Layout
   return (
     <div className="max-w-7xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-primary mb-6">
         Available Courses
       </h1>
 
-      {!Array.isArray(courses) || courses.length === 0 ? (
+      {courses.length === 0 ? (
         <p className="text-gray-600">No courses available at the moment.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course) => {
             const isEnrolled = enrollments.includes(course.id);
+
             return (
               <div
                 key={course.id}
@@ -72,7 +86,7 @@ export default function CoursesPage() {
                     {course.title}
                   </h3>
                   <p className="text-sm text-gray-600 mb-3">
-                    {course.description}
+                    {course.description || "No description available"}
                   </p>
                 </div>
 
@@ -83,7 +97,7 @@ export default function CoursesPage() {
                     </span>
                   ) : (
                     <button
-                      onClick={() => handleEnroll(course.id)}
+                      onClick={() => handleEnroll(course.id, course.title)}
                       disabled={!token}
                       className="bg-primary text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >

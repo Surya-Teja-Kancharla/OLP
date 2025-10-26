@@ -14,7 +14,6 @@ async function createCourse(req, res) {
     const { error, value } = courseSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, message: error.message });
 
-    // instructor id from req.user
     const instructor_id = req.user.id;
     const course = await Course.create({
       title: xss(value.title),
@@ -36,7 +35,8 @@ async function listCourses(req, res) {
     const courses = await Course.list({ limit, offset });
     res.json({ success: true, data: courses });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to get courses' });
+    console.error("❌ Error fetching courses:", err);
+    res.status(500).json({ success: false, message: "Failed to get courses" });
   }
 }
 
@@ -47,15 +47,7 @@ async function getCourse(req, res) {
       return res.status(404).json({ success: false, message: "Course not found" });
 
     const contents = await CourseContent.listByCourse(course.id);
-
-    // ✅ Send in the expected structure
-    res.json({
-      success: true,
-      data: {
-        course,
-        contents,
-      },
-    });
+    res.json({ success: true, data: { course, contents } });
   } catch (err) {
     console.error("❌ Error fetching course:", err);
     res.status(500).json({ success: false, message: "Failed to get course" });
@@ -66,9 +58,10 @@ async function updateCourse(req, res) {
   try {
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ success: false, message: 'Not found' });
-    // Only instructor or admin can edit - RBAC handled in route
+
     const { error, value } = courseSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, message: error.message });
+
     const updated = await Course.update(req.params.id, value);
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -89,7 +82,6 @@ async function deleteCourse(req, res) {
 
 async function uploadContent(req, res) {
   try {
-    // upload middleware provides req.file
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
     const { courseId, type, title } = req.body;
     const content = await CourseContent.add({

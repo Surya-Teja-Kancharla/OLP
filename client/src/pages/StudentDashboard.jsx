@@ -31,10 +31,8 @@ export default function StudentDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* Page Title */}
       <h1 className="text-3xl font-bold text-primary mb-6">My Courses</h1>
 
-      {/* If no enrollments */}
       {enrollments.length === 0 ? (
         <p className="text-gray-600 text-center">
           You are not enrolled in any courses yet.
@@ -46,7 +44,6 @@ export default function StudentDashboard() {
               key={e.course_id}
               className="bg-white p-5 rounded-lg shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300"
             >
-              {/* Course Header */}
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">
@@ -65,7 +62,6 @@ export default function StudentDashboard() {
                 </div>
               </div>
 
-              {/* Progress Bar */}
               <div className="mt-3">
                 <div className="w-full bg-gray-200 h-2 rounded-full">
                   <div
@@ -75,13 +71,12 @@ export default function StudentDashboard() {
                 </div>
               </div>
 
-              {/* Continue Button */}
-              <div className="mt-5">
+              <div className="mt-5 flex justify-between items-center">
                 <button
                   className="w-full bg-primary text-white font-medium py-2 rounded-md hover:bg-blue-700 transition"
                   onClick={() => navigate(`/player/${e.course_id}`)}
                 >
-                  Continue Learning
+                  Continue Learning →
                 </button>
               </div>
             </div>
