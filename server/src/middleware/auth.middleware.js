@@ -15,10 +15,15 @@ async function authenticate(req, res, next) {
     }
 
     const token = authHeader.split(' ')[1];
-    console.log('🔍 Received Token:', token); // <-- Add this line
 
+    // ✅ Only log tokens in development
+    if(process.env.NODE_ENV === "development") {
+      console.log("🔍 Received Token:", token);
+    }
+
+    // ✅ Verify token
     const decoded = verify(token);
-
+    
     if (!decoded || !decoded.id) {
       return res.status(401).json({ success: false, message: 'Invalid token' });
     }
