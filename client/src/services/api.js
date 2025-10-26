@@ -1,5 +1,6 @@
 // client/src/services/api.js
 import axios from "axios";
+console.log("VITE_API_URL loaded:", import.meta.env.VITE_API_URL);
 
 // ✅ Automatically picks up environment variable (Render or Local)
 const api = axios.create({
