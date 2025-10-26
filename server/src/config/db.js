@@ -1,3 +1,4 @@
+// server/config/db.js
 const { Pool } = require("pg");
 require("dotenv").config();
 
@@ -8,19 +9,20 @@ const {
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
-  RENDER, // optional flag
+  NODE_ENV,
+  RENDER
 } = process.env;
 
-// ✅ Check if we're running on Render
-const isRender = !!DATABASE_URL || RENDER === "true";
+// ✅ Determine environment
+const isProduction = NODE_ENV === "production" || RENDER === "true";
 
-const pool = isRender
+// ✅ Create Pool instance
+const pool = isProduction
   ? new Pool({
-      connectionString: DATABASE_URL,
-      ssl: {
-        require: true,                // 🔒 Render PostgreSQL requires SSL
-        rejectUnauthorized: false,    // ✅ Allow Render's managed cert
-      },
+      connectionString:
+        DATABASE_URL ||
+        `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
+      ssl: { require: true, rejectUnauthorized: false } // 🔒 Render needs SSL
     })
   : new Pool({
       host: DB_HOST || "localhost",
@@ -28,20 +30,20 @@ const pool = isRender
       user: DB_USER || "postgres",
       password: DB_PASSWORD || "postgres",
       database: DB_NAME || "Online_Learning_Platform",
+      ssl: false // ✅ No SSL locally
     });
 
+// ✅ Test and log connection
 pool
   .connect()
   .then(() =>
     console.log(
-      isRender
+      isProduction
         ? "✅ Connected to Render PostgreSQL successfully"
         : "✅ Connected to Local PostgreSQL successfully"
     )
   )
-  .catch((err) =>
-    console.error("❌ Failed to connect to PostgreSQL:", err)
-  );
+  .catch((err) => console.error("❌ Failed to connect to PostgreSQL:", err));
 
 pool.on("error", (err) => {
   console.error("Unexpected PG client error", err);
