@@ -16,19 +16,33 @@ const errorHandler = require("./middleware/error.middleware");
 
 const app = express();
 
-// ✅ CORS Configuration for Render
+// ✅ CORS Configuration (Handles Render + Local + Preflight)
+const allowedOrigins = [
+  "https://olp-frontend.onrender.com", // deployed frontend
+  "http://localhost:5173",             // local dev (Vite)
+];
+
 app.use(
   cors({
-    origin: [
-      "https://olp-frontend.onrender.com", // your deployed frontend
-      "http://localhost:5173",             // local dev
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn("❌ CORS blocked request from:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
+// ✅ Handle preflight (OPTIONS) requests automatically
+app.options("*", cors());
+
+// ✅ Middleware
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -51,7 +65,7 @@ app.get("/", (req, res) => {
   res.json({ success: true, message: "OLP Backend running 🚀" });
 });
 
-// ✅ Error Handler
+// ✅ Error Handler (always at the end)
 app.use(errorHandler);
 
 module.exports = app;
