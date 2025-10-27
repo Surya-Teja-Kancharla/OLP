@@ -21,10 +21,11 @@ const pool = isProduction
       connectionString:
         DATABASE_URL ||
         `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
-      ssl: {
-        require: true,              // ✅ Required by Render
-        rejectUnauthorized: false,  // ✅ Skip certificate verification
-      },
+      // Conditional SSL configuration
+      ssl:
+        DATABASE_URL && process.env.PGSSLMODE !== 'no-verify' && process.env.PGSSLMODE !== 'disable'
+          ? { rejectUnauthorized: false }
+          : false,
     })
   : new Pool({
       host: DB_HOST || "localhost",
