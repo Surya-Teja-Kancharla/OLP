@@ -16,16 +16,18 @@ const {
 // Detect environment
 const isProduction = NODE_ENV === "production" || RENDER === "true";
 
+const connectionString = DATABASE_URL || `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+
+if (isProduction) {
+  console.log("Attempting to connect with connection string:", connectionString);
+}
+
 const pool = isProduction
   ? new Pool({
-      connectionString:
-        DATABASE_URL ||
-        `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
-      // Conditional SSL configuration
-      ssl:
-        DATABASE_URL && process.env.PGSSLMODE !== 'no-verify' && process.env.PGSSLMODE !== 'disable'
-          ? { rejectUnauthorized: false }
-          : false,
+      connectionString: connectionString,
+      ssl: DATABASE_URL
+        ? { rejectUnauthorized: process.env.PGSSLMODE === 'no-verify' ? false : true }
+        : false,
     })
   : new Pool({
       host: DB_HOST || "localhost",
