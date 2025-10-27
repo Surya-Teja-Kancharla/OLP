@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config();
 
+// Import routes
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const courseRoutes = require("./routes/course.routes");
@@ -12,44 +12,19 @@ const forumRoutes = require("./routes/forum.routes");
 const playerRoutes = require("./routes/player.routes");
 const lessonCompletionRoutes = require("./routes/lessonCompletion.routes");
 const courseContentRoutes = require("./routes/courseContent.routes");
+
 const errorHandler = require("./middleware/error.middleware");
 
 const app = express();
 
-// ✅ CORS Configuration (Handles Render + Local + Preflight)
-const allowedOrigins = [
-  "https://olp-frontend.onrender.com", // deployed frontend
-  "http://localhost:5173",             // local dev (Vite)
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.warn("❌ CORS blocked request from:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
-// ✅ Handle preflight (OPTIONS) requests automatically
-app.options("*", cors());
-
-// ✅ Middleware
+app.use(cors());
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Serve uploaded files if any
+// ✅ Static uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 
-// ✅ Register routes
+// ✅ Register all routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
@@ -60,12 +35,10 @@ app.use("/api/player", playerRoutes);
 app.use("/api/lesson-completion", lessonCompletionRoutes);
 app.use("/api/course-content", courseContentRoutes);
 
-// ✅ Health check route
-app.get("/", (req, res) => {
-  res.json({ success: true, message: "OLP Backend running 🚀" });
-});
+// Root test route
+app.get("/", (req, res) => res.json({ success: true, message: "OLP Backend running 🚀" }));
 
-// ✅ Error Handler (always at the end)
+// Error handling middleware
 app.use(errorHandler);
 
 module.exports = app;

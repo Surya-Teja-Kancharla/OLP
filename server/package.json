@@ -20,12 +20,11 @@
     "helmet": "^7.0.0",
     "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.0",
-    "multer": "^2.0.2",
+    "multer": "^1.4.5-lts.1",
     "pg": "^8.11.0",
     "xss": "^1.0.15"
   },
   "devDependencies": {
-    "@types/multer": "^2.0.0",
     "jest": "^29.6.1",
     "nodemon": "^2.0.22",
     "supertest": "^6.3.3"
