@@ -19,23 +19,13 @@ async function start() {
     // Test database connection
     await pool.query("SELECT NOW()");
 
-    // Identify environment
-    const isProduction =
-      process.env.NODE_ENV === "production" || process.env.RENDER === "true";
-    const env = isProduction ? "Render (Production)" : "Local (Development)";
+    // Choose a descriptive message depending on environment
+    const env = process.env.NODE_ENV === "production" || process.env.RENDER === "true"
+      ? "Render (Production)"
+      : "Local (Development)";
 
-    // ✅ Log only in local development
-    if (!isProduction) {
-      console.log(`✅ Connected to PostgreSQL — ${env}`);
-      console.log(`🚀 Server running on port ${PORT}`);
-    }
-
-    // Always start the server (but log only locally)
-    app.listen(PORT, () => {
-      if (!isProduction) {
-        console.log(`📡 Listening on http://localhost:${PORT}`);
-      }
-    });
+    console.log(`✅ Connected to PostgreSQL — ${env}`);
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   } catch (err) {
     console.error("❌ Failed to connect to DB", err);
     process.exit(1);
