@@ -21,7 +21,7 @@ const pool = isProduction
   ? new Pool({
       connectionString:
         DATABASE_URL ||
-        `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
+        `postgresql://online_learning_platform_0ln9_user:BYIab6fqSPpddXMSrnkvPlpRPdpbnghE@dpg-d405p6f5r7bs73a6r1f0-a.oregon-postgres.render.com/online_learning_platform_0ln9`,
       ssl: { require: true, rejectUnauthorized: false } // 🔒 Render needs SSL
     })
   : new Pool({
