@@ -1,5 +1,4 @@
 <h1>🎓 Online Learning Platform (OLP)</h1>
-
 <p>An end-to-end <strong>Online Learning Platform</strong> built with <strong>React (Vite)</strong>, <strong>Node.js (Express)</strong>, and <strong>PostgreSQL</strong>, designed to streamline course delivery, student progress tracking, and instructor management — deployed on <strong>Render</strong>.</p>
 
 <p><strong>Developed by:</strong> K. Surya Teja<br>
@@ -8,11 +7,11 @@
 <hr>
 
 <h2>🚀 Live Demo</h2>
-
 <table>
 <tr><th>Component</th><th>URL</th></tr>
 <tr><td>🌐 Frontend</td><td><a href="https://olp-frontend.onrender.com">https://olp-frontend.onrender.com</a></td></tr>
-<tr><td>⚙️ Backend</td><td><a href="https://olp-wfls.onrender.com">https://olp-wfls.onrender.com</a></td></tr>
+<tr><td>⚙️ Backend</td><td><a href="https://olp-9f9i.onrender.com">https://olp-9f9i.onrender.com</a></td></tr>
+<tr><td>🎬 Video Demo</td><td><a href="https://youtu.be/8RxxmPAv3v8?si=k7JMSHyQuoVTt2qu" target="_blank">Watch on YouTube</a></td></tr>
 </table>
 
 <hr>
@@ -45,7 +44,6 @@
 <hr>
 
 <h2>📁 Project Structure</h2>
-
 <pre>
 OLP/
 │
@@ -53,6 +51,7 @@ OLP/
 ├── server/           # Backend (Express + PostgreSQL)
 ├── database/         # Database setup (Docker, schema, seed data)
 ├── docker-compose.yml
+├── PROJECT_TREE.txt
 └── README.md
 </pre>
 
@@ -90,10 +89,7 @@ http://localhost:5173
 </pre>
 
 <h3>🐳 Docker Setup</h3>
-
-<pre>
-docker compose up --build
-</pre>
+<pre>docker compose up --build</pre>
 
 <p>This will:</p>
 <ul>
@@ -110,7 +106,6 @@ docker compose up --build
 <h2>🔑 Environment Variables</h2>
 
 <h3>Backend (<code>server/.env</code>)</h3>
-
 <table>
 <tr><th>Variable</th><th>Description</th></tr>
 <tr><td>PORT</td><td>Port number for backend</td></tr>
@@ -121,10 +116,9 @@ docker compose up --build
 </table>
 
 <h3>Frontend (<code>client/.env</code>)</h3>
-
 <table>
 <tr><th>Variable</th><th>Description</th></tr>
-<tr><td>VITE_API_URL</td><td>Backend API base URL (e.g., <a href="https://olp-wfls.onrender.com">https://olp-wfls.onrender.com</a>)</td></tr>
+<tr><td>VITE_API_URL</td><td>Backend API base URL (e.g., <a href="http://localhost:5000/api">http://localhost:5000/api</a>)</td></tr>
 </table>
 
 <hr>
@@ -194,11 +188,9 @@ docker compose up --build
 <hr>
 
 <h2>🛠️ Recent Updates & Improvements (Version 2.1 — October 2025)</h2>
-
 <p>This section highlights all updates and refactors introduced to enhance stability, functionality, and user experience.</p>
 
 <h3>⚙️ Backend Enhancements</h3>
-
 <ul>
   <li>Added <code>DELETE /api/courses/:id</code> for admin-only course deletion with cascading cleanup.</li>
   <li>Enhanced <code>lessonCompletion.routes.js</code> to auto-update progress when lessons are completed.</li>
@@ -210,7 +202,6 @@ docker compose up --build
 </ul>
 
 <h3>💻 Frontend Enhancements</h3>
-
 <ul>
   <li>Replaced all <code>alert()</code> calls with non-blocking <strong>React Toastify</strong> notifications.</li>
   <li>Refactored <strong>CoursesPage.jsx</strong> to show toast-based success/failure enrollment feedback.</li>
@@ -228,7 +219,6 @@ docker compose up --build
 </ul>
 
 <h3>📊 Service Layer & UI Improvements</h3>
-
 <ul>
   <li>Improved API abstraction with detailed error handling.</li>
   <li>Updated enrollment and lesson completion services to sync frontend state with backend instantly.</li>
@@ -237,7 +227,6 @@ docker compose up --build
 </ul>
 
 <h3>✅ Bug Fixes</h3>
-
 <ul>
   <li>Fixed “Cannot POST /api/courses” issue during course creation.</li>
   <li>Resolved progress not updating after marking lessons complete.</li>
@@ -246,7 +235,6 @@ docker compose up --build
 </ul>
 
 <h3>📈 Summary of Changes</h3>
-
 <table>
 <tr><th>Area</th><th>Before</th><th>After</th></tr>
 <tr><td>Enrollment</td><td>Alerts</td><td>Toast notifications with instant update</td></tr>
@@ -257,7 +245,6 @@ docker compose up --build
 </table>
 
 <h3>🧾 Commit Highlights</h3>
-
 <pre>
 + Added lesson and course progress tracking
 + Restored Take Quiz button after completion
@@ -268,7 +255,6 @@ docker compose up --build
 </pre>
 
 <h3>💬 Developer Notes</h3>
-
 <ul>
   <li>All updates maintain backward compatibility with previous routes.</li>
   <li>Includes structured logging for easier debugging in development mode.</li>
