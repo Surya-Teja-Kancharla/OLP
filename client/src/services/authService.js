@@ -7,7 +7,7 @@ export const signup = async (userData) => {
 };
 
 // ✅ User login
-export const login = async (email, password) => {
+export const login = async ({ email, password }) => {
   const res = await api.post("/auth/login", { email, password });
 
   if (res.data.token) {
