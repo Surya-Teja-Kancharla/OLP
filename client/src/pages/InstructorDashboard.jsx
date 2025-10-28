@@ -95,20 +95,6 @@ export default function InstructorDashboard() {
           </div>
         </div>
       </div>
-
-      {/* Hint to go to Courses page */}
-      <div className="mt-8 text-gray-600 text-center">
-        <p>
-          To view or manage your courses, go to{" "}
-          <a
-            href="/instructor/courses"
-            className="text-primary font-medium hover:underline"
-          >
-            Courses
-          </a>{" "}
-          page.
-        </p>
-      </div>
     </div>
   );
 }
