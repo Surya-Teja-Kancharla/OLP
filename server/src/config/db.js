@@ -20,8 +20,7 @@ const isProduction = NODE_ENV === "production" || RENDER === "true";
 const pool = isProduction
   ? new Pool({
       connectionString:
-        DATABASE_URL ||
-        `postgresql://online_learning_platform_0ln9_user:BYIab6fqSPpddXMSrnkvPlpRPdpbnghE@dpg-d405p6f5r7bs73a6r1f0-a.oregon-postgres.render.com/online_learning_platform_0ln9`,
+        DATABASE_URL,
       ssl: { require: true, rejectUnauthorized: false } // 🔒 Render needs SSL
     })
   : new Pool({
